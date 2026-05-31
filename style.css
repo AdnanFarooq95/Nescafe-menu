@@ -817,6 +817,20 @@ body { scrollbar-width: none; }
   border-radius: 0 var(--radius-lg) 0 var(--radius-sm);
 }
 
+/* ===== ITEM IMAGES ===== */
+.item-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.menu-item.has-image {
+  align-items: flex-start;
+}
+
 /* ===== NO RESULTS ===== */
 .no-results {
   text-align: center;

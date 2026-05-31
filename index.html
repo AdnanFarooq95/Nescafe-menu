@@ -126,114 +126,8 @@
   <button class="scroll-top" id="scroll-top" aria-label="Scroll to top">↑</button>
 
 <script>
-// ============================================================
-// MENU DATA
-// ============================================================
-const menuData = [
-  // Freshly Brewed Coffee
-  { name: "Espresso", price: 69, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Americano", price: 79, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Espresso Macchiato", price: 69, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Café Latte", price: 99, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Cappuccino", price: 99, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Hot Chocolate", price: 109, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Café Mocha", price: 119, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"], bestseller: true },
-  { name: "Vietnamese Latte", price: 139, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
-  { name: "Affogato", price: 129, type: "veg", category: "Freshly Brewed Coffee" },
-
-  // Classic Teas
-  { name: "Cardamom Tea", price: 59, type: "veg", category: "Classic Teas" },
-  { name: "Lemon Tea", price: 59, type: "veg", category: "Classic Teas" },
-  { name: "Iced Tea", price: 99, type: "veg", category: "Classic Teas" },
-  { name: "Hot Peach Tea", price: 79, type: "veg", category: "Classic Teas" },
-
-  // Blended Cold Beverages
-  { name: "Lemon Iced Tea", price: 99, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
-  { name: "Café Frappé", price: 109, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"], bestseller: true },
-  { name: "Cold Café Mocha", price: 119, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
-  { name: "Cold Chocolate", price: 109, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
-  { name: "Vietnamese Iced Latte", price: 139, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
-  { name: "Ice Latte Classic", price: 109, type: "veg", category: "Blended Cold Beverages" },
-  { name: "Iced Americano", price: 99, type: "veg", category: "Blended Cold Beverages" },
-  { name: "Iced Spanish Latte", price: 149, type: "veg", category: "Blended Cold Beverages", bestseller: true },
-
-  // Shakes & Mocktails
-  { name: "Fresh Lime Soda", price: 110, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Classic Mojito", price: 130, type: "veg", category: "Shakes & Mocktails", bestseller: true },
-  { name: "Watermelon Fizz", price: 130, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Blue Thunder", price: 130, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Green Apple", price: 130, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Kit Kat Shake", price: 160, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Brownie Shake", price: 130, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Vanilla Ice Cream", price: 50, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Shahi Anjeer Ice Cream", price: 60, type: "veg", category: "Shakes & Mocktails" },
-  { name: "Banana Shake", price: 180, type: "veg", category: "Shakes & Mocktails" },
-
-  // Maggi & Pasta
-  { name: "Plain Maggi", price: 69, type: "veg", category: "Maggi & Pasta" },
-  { name: "Spicy Garlic Maggi", price: 79, type: "veg", category: "Maggi & Pasta" },
-  { name: "Spicy Manchurian Maggi", price: 79, type: "veg", category: "Maggi & Pasta" },
-  { name: "Spicy Cheesy Maggi", price: 79, type: "veg", category: "Maggi & Pasta", bestseller: true },
-  { name: "Maggi Cheese Corn", price: 79, type: "veg", category: "Maggi & Pasta" },
-  { name: "Penne Masala Pasta", price: 99, type: "veg", category: "Maggi & Pasta" },
-  { name: "Macaroni Cheese Pasta", price: 99, type: "veg", category: "Maggi & Pasta" },
-  { name: "Cheesy Tomato Twist Pasta", price: 99, type: "veg", category: "Maggi & Pasta" },
-  { name: "Korean Maggi", price: 150, type: "veg", category: "Maggi & Pasta", bestseller: true },
-
-  // Select Bakery
-  { name: "Black Forest Pastry", price: 120, type: "egg", category: "Select Bakery" },
-  { name: "Cream Roll", price: 60, type: "egg", category: "Select Bakery" },
-  { name: "Chocolate Donut", price: 120, type: "egg", category: "Select Bakery" },
-  { name: "Walnut Cup", price: 120, type: "egg", category: "Select Bakery" },
-  { name: "Walnut Brownie", price: 130, type: "egg", category: "Select Bakery" },
-  { name: "Choco Lava", price: 120, type: "veg", category: "Select Bakery", bestseller: true },
-  { name: "Choco Muffin", price: 100, type: "veg", category: "Select Bakery" },
-  { name: "Fruit Muffin", price: 100, type: "veg", category: "Select Bakery" },
-  { name: "Chicken Patty", price: 80, type: "non-veg", category: "Select Bakery" },
-  { name: "Paneer Patty", price: 70, type: "veg", category: "Select Bakery" },
-  { name: "Aloo Patty", price: 60, type: "veg", category: "Select Bakery" },
-  { name: "Mutton Patty", price: 80, type: "non-veg", category: "Select Bakery" },
-  { name: "Chicken Makhni Sandwich", price: 160, type: "non-veg", category: "Select Bakery" },
-  { name: "Tres Leches Cake", price: 160, type: "veg", category: "Select Bakery" },
-  { name: "Tres Leches Cake (TA)", price: 180, type: "veg", category: "Select Bakery" },
-
-  // Snacks
-  { name: "Chicken Sandwich", price: 150, type: "non-veg", category: "Snacks" },
-  { name: "Cheese Corn Sandwich", price: 100, type: "veg", category: "Snacks" },
-  { name: "Chicken Loaf", price: 120, type: "non-veg", category: "Snacks" },
-  { name: "Chicken Muffin", price: 80, type: "non-veg", category: "Snacks" },
-  { name: "Chocolate Truffle Pastry", price: 140, type: "veg", category: "Snacks", bestseller: true },
-  { name: "Brownie KitKat Shake", price: 170, type: "veg", category: "Snacks" },
-  { name: "Brownie KitKat Shake + Coffee", price: 209, type: "veg", category: "Snacks" },
-
-  // Happiness @ MRP
-  { name: "Nescafé RTD", price: 50, type: "veg", category: "Happiness @ MRP" },
-  { name: "Maggi Chilli Chow Cuppa", price: 50, type: "veg", category: "Happiness @ MRP" },
-  { name: "Maggi Masala Cuppa", price: 50, type: "veg", category: "Happiness @ MRP" },
-  { name: "Classic Fruit & Nut", price: 50, type: "veg", category: "Happiness @ MRP" },
-  { name: "KitKat Dark Choco Wafer", price: 220, type: "veg", category: "Happiness @ MRP" },
-  { name: "Bar One", price: 10, type: "veg", category: "Happiness @ MRP" },
-  { name: "Milkybar", price: 20, type: "veg", category: "Happiness @ MRP" },
-  { name: "Munch", price: 20, type: "veg", category: "Happiness @ MRP" },
-  { name: "KitKat", price: 25, type: "veg", category: "Happiness @ MRP" },
-  { name: "Nestlé Classic", price: 20, type: "veg", category: "Happiness @ MRP" },
-  { name: "KitKat (New)", price: 30, type: "veg", category: "Happiness @ MRP" },
-  { name: "Packaged Water", price: 10, type: "veg", category: "Happiness @ MRP" },
-];
-
-// ============================================================
-// CATEGORY CONFIG
-// ============================================================
-const categoryConfig = {
-  "Freshly Brewed Coffee": { emoji: "☕", image: "images/cat_coffee.png", order: 1 },
-  "Classic Teas":          { emoji: "🍵", image: "images/cat_tea.png",    order: 2 },
-  "Blended Cold Beverages":{ emoji: "🧊", image: "images/cat_cold.png",  order: 3 },
-  "Shakes & Mocktails":    { emoji: "🥤", image: "images/cat_shakes.png", order: 4 },
-  "Maggi & Pasta":         { emoji: "🍜", image: "images/cat_maggi.png", order: 5 },
-  "Select Bakery":         { emoji: "🧁", image: "images/cat_bakery.png", order: 6 },
-  "Snacks":                { emoji: "🥪", image: "images/cat_snacks.png", order: 7 },
-  "Happiness @ MRP":       { emoji: "🍫", image: "images/cat_snacks.png", order: 8 },
-};
+let menuData = [];
+let categoryConfig = {};
 
 // ============================================================
 // STATE
@@ -258,7 +152,16 @@ const filterTags = document.querySelectorAll('.filter-tag');
 // ============================================================
 // INIT
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('menu-data.json?v=' + Date.now());
+    const data = await res.json();
+    menuData = data.menuData;
+    categoryConfig = data.categoryConfig;
+  } catch (err) {
+    console.error('Failed to load menu data:', err);
+  }
+
   buildCategoryNav();
   renderMenu();
   updateStats();
@@ -342,10 +245,12 @@ function renderItem(item) {
     : '';
 
   const popular = item.bestseller ? `<span class="bestseller-tag">★ Popular</span>` : '';
+  const image = item.image ? `<img src="${item.image}" alt="${item.name}" class="item-thumb" loading="lazy">` : '';
 
   return `
-    <div class="menu-item" id="item-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">
+    <div class="menu-item ${item.image ? 'has-image' : ''}" id="item-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">
       ${popular}
+      ${image}
       <div class="item-info">
         <div class="item-top-row">
           <span class="veg-badge ${badge}"></span>

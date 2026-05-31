@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Nescafé — Admin Panel</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=Outfit:wght@500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0907;
+      --card: #1a110d;
+      --border: rgba(212, 165, 116, 0.15);
+      --text: #faf3eb;
+      --text2: #8a7060;
+      --accent: #d4a574;
+      --red: #c8102e;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    
+    .container { max-width: 800px; margin: 0 auto; }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 span { color: var(--red); }
+
+    .btn {
+      background: linear-gradient(135deg, var(--red), #9a0c22);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn-secondary { background: var(--card); border: 1px solid var(--border); }
+
+    /* Login Screen */
+    #login-screen {
+      max-width: 400px;
+      margin: 100px auto;
+      background: var(--card);
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-size: 0.8rem; color: var(--text2); margin-bottom: 5px; font-family: 'Outfit'; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      font-family: 'Inter';
+    }
+    input[type="file"] { padding: 6px; }
+
+    /* Dashboard */
+    #dashboard { display: none; }
+    
+    .status-bar {
+      background: rgba(212, 165, 116, 0.1);
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .admin-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-item-info strong { display: block; font-size: 1rem; }
+    .admin-item-info span { color: var(--text2); font-size: 0.8rem; }
+    .admin-item-img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; margin-right: 15px; background: #000; }
+    .admin-item-left { display: flex; align-items: center; }
+
+    .delete-btn { background: transparent; border: none; color: var(--red); cursor: pointer; padding: 5px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      display: none; justify-content: center; align-items: center; z-index: 100;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg);
+      width: 100%; max-width: 500px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>NES<span>CAFÉ</span> Admin</h1>
+      <button class="btn btn-secondary" id="btn-logout" style="display:none;">Logout</button>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+      <h2 style="margin-bottom: 20px;">Secure Login</h2>
+      <div class="form-group">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+      </div>
+      <button class="btn" id="btn-login" style="width: 100%;">Connect</button>
+      <p style="font-size: 0.7rem; color: var(--text2); margin-top: 15px;">
+        Requires a GitHub token with "repo" access to push updates directly to the 'dev' branch.
+      </p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+      <div class="status-bar">
+        <span>Branch: <strong>dev</strong></span>
+        <button class="btn" id="btn-save" style="background: var(--accent); color: black;">Publish Changes to GitHub</button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2>Menu Items</h2>
+        <button class="btn" id="btn-add-item">+ Add New Item</button>
+      </div>
+
+      <div class="item-list" id="item-list"></div>
+    </div>
+  </div>
+
+  <!-- Add Item Modal -->
+  <div class="modal-overlay" id="item-modal">
+    <div class="modal">
+      <h2 style="margin-bottom: 20px;">Add Menu Item</h2>
+      <div class="form-group">
+        <label>Item Name</label>
+        <input type="text" id="item-name" placeholder="e.g. Vanilla Latte">
+      </div>
+      <div class="form-group" style="display: flex; gap: 10px;">
+        <div style="flex:1;">
+          <label>Price (₹)</label>
+          <input type="number" id="item-price" placeholder="120">
+        </div>
+        <div style="flex:1;">
+          <label>Dietary Type</label>
+          <select id="item-type">
+            <option value="veg">Veg</option>
+            <option value="non-veg">Non-Veg</option>
+            <option value="egg">Egg</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="item-category"></select>
+      </div>
+      <div class="form-group">
+        <label>Image (Optional)</label>
+        <input type="file" id="item-image" accept="image/jpeg, image/png, image/webp">
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="item-bestseller"> Mark as Popular/Bestseller
+        </label>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btn-cancel-item">Cancel</button>
+        <button class="btn" id="btn-save-item">Add Item</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const GITHUB_OWNER = 'AdnanFarooq95';
+const GITHUB_REPO = 'Nescafe-menu';
+const BRANCH = 'dev';
+
+let ghToken = localStorage.getItem('nescafe_gh_token') || '';
+let menuData = [];
+let categoryConfig = {};
+let fileBase64 = null;
+let fileExtension = '';
+
+// DOM Elements
+const loginScreen = document.getElementById('login-screen');
+const dashboard = document.getElementById('dashboard');
+const btnLogout = document.getElementById('btn-logout');
+const itemListEl = document.getElementById('item-list');
+const categorySelect = document.getElementById('item-category');
+const modal = document.getElementById('item-modal');
+const btnSaveGlobal = document.getElementById('btn-save');
+
+// Initialization
+if (ghToken) {
+  loginScreen.style.display = 'none';
+  dashboard.style.display = 'block';
+  btnLogout.style.display = 'block';
+  fetchData();
+}
+
+// GitHub API Helper
+async function ghRequest(method, path, body = null) {
+  const headers = {
+    'Authorization': `Bearer ${ghToken}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
+  
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/${path}`, options);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+// Base64 helper for utf-8
+function b64EncodeUnicode(str) {
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+}
+
+// Login
+document.getElementById('btn-login').addEventListener('click', () => {
+  const token = document.getElementById('gh-token').value.trim();
+  if (token) {
+    ghToken = token;
+    localStorage.setItem('nescafe_gh_token', token);
+    loginScreen.style.display = 'none';
+    dashboard.style.display = 'block';
+    btnLogout.style.display = 'block';
+    fetchData();
+  }
+});
+
+btnLogout.addEventListener('click', () => {
+  localStorage.removeItem('nescafe_gh_token');
+  location.reload();
+});
+
+// Fetch Data
+async function fetchData() {
+  itemListEl.innerHTML = '<p>Loading from GitHub...</p>';
+  try {
+    const res = await ghRequest('GET', `contents/menu-data.json?ref=${BRANCH}`);
+    const content = decodeURIComponent(escape(atob(res.content)));
+    const data = JSON.parse(content);
+    menuData = data.menuData;
+    categoryConfig = data.categoryConfig;
+    renderAdminList();
+    populateCategories();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load data. Check your token or repo permissions.");
+    localStorage.removeItem('nescafe_gh_token');
+    location.reload();
+  }
+}
+
+// Render List
+function renderAdminList() {
+  itemListEl.innerHTML = '';
+  // Reverse to show newest first
+  [...menuData].reverse().forEach((item, index) => {
+    const realIndex = menuData.length - 1 - index;
+    const imgHtml = item.image ? `<img src="${item.image}" class="admin-item-img">` : '<div class="admin-item-img"></div>';
+    
+    itemListEl.innerHTML += `
+      <div class="admin-item">
+        <div class="admin-item-left">
+          ${imgHtml}
+          <div class="admin-item-info">
+            <strong>${item.name} ${item.bestseller ? '⭐' : ''}</strong>
+            <span>₹${item.price} • ${item.category}</span>
+          </div>
+        </div>
+        <button class="delete-btn" onclick="deleteItem(${realIndex})">✕ Remove</button>
+      </div>
+    `;
+  });
+}
+
+function populateCategories() {
+  categorySelect.innerHTML = Object.keys(categoryConfig).map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+window.deleteItem = (index) => {
+  if (confirm(`Delete ${menuData[index].name}? (You still need to click Publish Changes to save)`)) {
+    menuData.splice(index, 1);
+    renderAdminList();
+  }
+};
+
+// Modal Logic
+document.getElementById('btn-add-item').addEventListener('click', () => {
+  document.getElementById('item-name').value = '';
+  document.getElementById('item-price').value = '';
+  document.getElementById('item-image').value = '';
+  fileBase64 = null;
+  modal.classList.add('active');
+});
+
+document.getElementById('btn-cancel-item').addEventListener('click', () => {
+  modal.classList.remove('active');
+});
+
+// Handle Image Selection
+document.getElementById('item-image').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const ext = file.name.split('.').pop();
+  fileExtension = ext;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    // Strip "data:image/jpeg;base64," part
+    fileBase64 = ev.target.result.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+});
+
+// Save Local Item
+document.getElementById('btn-save-item').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-save-item');
+  const name = document.getElementById('item-name').value.trim();
+  const price = parseInt(document.getElementById('item-price').value) || 0;
+  const type = document.getElementById('item-type').value;
+  const category = document.getElementById('item-category').value;
+  const bestseller = document.getElementById('item-bestseller').checked;
+
+  if (!name) return alert('Name is required');
+
+  btn.textContent = 'Processing...';
+  btn.disabled = true;
+
+  const newItem = { name, price, type, category };
+  if (bestseller) newItem.bestseller = true;
+
+  // Upload image immediately if exists, to get URL
+  if (fileBase64) {
+    try {
+      const fileName = `item-${Date.now()}.${fileExtension}`;
+      const path = `images/items/${fileName}`;
+      await ghRequest('PUT', `contents/${path}`, {
+        message: `Upload image for ${name}`,
+        content: fileBase64,
+        branch: BRANCH
+      });
+      // GitHub Pages image path
+      newItem.image = path;
+    } catch (err) {
+      alert("Failed to upload image.");
+      console.error(err);
+    }
+  }
+
+  menuData.push(newItem);
+  renderAdminList();
+  modal.classList.remove('active');
+  btn.textContent = 'Add Item';
+  btn.disabled = false;
+});
+
+// Publish Changes to GitHub
+btnSaveGlobal.addEventListener('click', async () => {
+  btnSaveGlobal.textContent = 'Saving...';
+  btnSaveGlobal.disabled = true;
+
+  try {
+    // 1. Get current SHA of menu-data.json
+    let sha;
+    try {
+      const getRes = await ghRequest('GET', `contents/menu-data.json?ref=${BRANCH}`);
+      sha = getRes.sha;
+    } catch(e) { console.error('No existing file, will create new'); }
+
+    // 2. Prepare payload
+    const updatedJson = JSON.stringify({ menuData, categoryConfig }, null, 2);
+    const payload = {
+      message: 'Update menu data via Admin Panel',
+      content: b64EncodeUnicode(updatedJson),
+      branch: BRANCH
+    };
+    if (sha) payload.sha = sha;
+
+    // 3. PUT request
+    await ghRequest('PUT', `contents/menu-data.json`, payload);
+    
+    alert('Changes Published Successfully to dev branch!');
+  } catch (err) {
+    console.error(err);
+    alert('Error saving data.');
+  }
+
+  btnSaveGlobal.textContent = 'Publish Changes to GitHub';
+  btnSaveGlobal.disabled = false;
+});
+</script>
+
+</body>
+</html>
