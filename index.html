@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Nescafé Café Digital Menu – Freshly brewed coffees, cold beverages, teas, shakes, Maggi, pasta, bakery & snacks. Scan the QR to explore.">
+  <meta name="theme-color" content="#0d0907">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nescafé Menu">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <title>Nescafé Café — Menu</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+  <link rel="apple-touch-icon" href="images/hero.png">
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-logo">NES<span>CAFÉ</span></div>
+    <div class="loading-bar-container">
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header" id="main-header">
+    <div class="header-bg"></div>
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">☕</div>
+        <div class="logo-text">NES<span>CAFÉ</span></div>
+      </div>
+      <div class="header-badge">
+        <span class="dot"></span>
+        Menu
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-image">
+      <img src="images/hero.png" alt="Nescafé coffee" loading="eager" fetchpriority="high">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-tagline">Welcome to Nescafé</p>
+      <h1 class="hero-title">Crafted with<br><em>Passion</em> & Care</h1>
+      <p class="hero-subtitle">From rich espressos to comforting Maggi — discover our handcrafted menu.</p>
+    </div>
+  </section>
+
+  <!-- Category Navigation -->
+  <nav class="category-nav" id="category-nav">
+    <div class="category-scroll" id="category-scroll"></div>
+  </nav>
+
+  <!-- Search -->
+  <div class="search-container">
+    <div class="search-box" id="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="search" id="search-input" placeholder="Search menu..." autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      <button class="search-clear" id="search-clear" aria-label="Clear search">✕</button>
+    </div>
+  </div>
+
+  <!-- Dietary Filters -->
+  <div class="filter-section">
+    <span class="filter-label">Filter:</span>
+    <div class="filter-tags" id="filter-tags">
+      <button class="filter-tag veg-filter" data-filter="veg">
+        <span class="filter-dot"></span> Veg
+      </button>
+      <button class="filter-tag nonveg-filter" data-filter="non-veg">
+        <span class="filter-dot"></span> Non-Veg
+      </button>
+      <button class="filter-tag egg-filter" data-filter="egg">
+        <span class="filter-dot"></span> Egg
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-item">
+      <span class="stat-number" id="stat-total">0</span>
+      <span class="stat-label">Items</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-number" id="stat-categories">0</span>
+      <span class="stat-label">Categories</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-number" id="stat-veg">0</span>
+      <span class="stat-label">Veg</span>
+    </div>
+  </div>
+
+  <!-- Menu Content -->
+  <main class="menu-container" id="menu-container"></main>
+
+  <!-- No Results -->
+  <div class="no-results" id="no-results">
+    <div class="no-results-emoji">🔍</div>
+    <p class="no-results-text">No items found</p>
+    <p class="no-results-hint">Try a different search or clear filters</p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-logo">NES<span>CAFÉ</span></div>
+    <div class="footer-divider"></div>
+    <p class="footer-text">
+      All prices inclusive of taxes.<br>
+      Items subject to availability.<br>
+      © 2026 Nescafé
+    </p>
+  </footer>
+
+  <!-- Scroll To Top -->
+  <button class="scroll-top" id="scroll-top" aria-label="Scroll to top">↑</button>
+
+<script>
+// ============================================================
+// MENU DATA
+// ============================================================
+const menuData = [
+  // Freshly Brewed Coffee
+  { name: "Espresso", price: 69, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Americano", price: 79, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Espresso Macchiato", price: 69, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Café Latte", price: 99, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Cappuccino", price: 99, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Hot Chocolate", price: 109, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Café Mocha", price: 119, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"], bestseller: true },
+  { name: "Vietnamese Latte", price: 139, type: "veg", category: "Freshly Brewed Coffee", addons: ["Extra Shot", "Flavors"] },
+  { name: "Affogato", price: 129, type: "veg", category: "Freshly Brewed Coffee" },
+
+  // Classic Teas
+  { name: "Cardamom Tea", price: 59, type: "veg", category: "Classic Teas" },
+  { name: "Lemon Tea", price: 59, type: "veg", category: "Classic Teas" },
+  { name: "Iced Tea", price: 99, type: "veg", category: "Classic Teas" },
+  { name: "Hot Peach Tea", price: 79, type: "veg", category: "Classic Teas" },
+
+  // Blended Cold Beverages
+  { name: "Lemon Iced Tea", price: 99, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
+  { name: "Café Frappé", price: 109, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"], bestseller: true },
+  { name: "Cold Café Mocha", price: 119, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
+  { name: "Cold Chocolate", price: 109, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
+  { name: "Vietnamese Iced Latte", price: 139, type: "veg", category: "Blended Cold Beverages", addons: ["Extra Shot", "Flavors"] },
+  { name: "Ice Latte Classic", price: 109, type: "veg", category: "Blended Cold Beverages" },
+  { name: "Iced Americano", price: 99, type: "veg", category: "Blended Cold Beverages" },
+  { name: "Iced Spanish Latte", price: 149, type: "veg", category: "Blended Cold Beverages", bestseller: true },
+
+  // Shakes & Mocktails
+  { name: "Fresh Lime Soda", price: 110, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Classic Mojito", price: 130, type: "veg", category: "Shakes & Mocktails", bestseller: true },
+  { name: "Watermelon Fizz", price: 130, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Blue Thunder", price: 130, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Green Apple", price: 130, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Kit Kat Shake", price: 160, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Brownie Shake", price: 130, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Vanilla Ice Cream", price: 50, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Shahi Anjeer Ice Cream", price: 60, type: "veg", category: "Shakes & Mocktails" },
+  { name: "Banana Shake", price: 180, type: "veg", category: "Shakes & Mocktails" },
+
+  // Maggi & Pasta
+  { name: "Plain Maggi", price: 69, type: "veg", category: "Maggi & Pasta" },
+  { name: "Spicy Garlic Maggi", price: 79, type: "veg", category: "Maggi & Pasta" },
+  { name: "Spicy Manchurian Maggi", price: 79, type: "veg", category: "Maggi & Pasta" },
+  { name: "Spicy Cheesy Maggi", price: 79, type: "veg", category: "Maggi & Pasta", bestseller: true },
+  { name: "Maggi Cheese Corn", price: 79, type: "veg", category: "Maggi & Pasta" },
+  { name: "Penne Masala Pasta", price: 99, type: "veg", category: "Maggi & Pasta" },
+  { name: "Macaroni Cheese Pasta", price: 99, type: "veg", category: "Maggi & Pasta" },
+  { name: "Cheesy Tomato Twist Pasta", price: 99, type: "veg", category: "Maggi & Pasta" },
+  { name: "Korean Maggi", price: 150, type: "veg", category: "Maggi & Pasta", bestseller: true },
+
+  // Select Bakery
+  { name: "Black Forest Pastry", price: 120, type: "egg", category: "Select Bakery" },
+  { name: "Cream Roll", price: 60, type: "egg", category: "Select Bakery" },
+  { name: "Chocolate Donut", price: 120, type: "egg", category: "Select Bakery" },
+  { name: "Walnut Cup", price: 120, type: "egg", category: "Select Bakery" },
+  { name: "Walnut Brownie", price: 130, type: "egg", category: "Select Bakery" },
+  { name: "Choco Lava", price: 120, type: "veg", category: "Select Bakery", bestseller: true },
+  { name: "Choco Muffin", price: 100, type: "veg", category: "Select Bakery" },
+  { name: "Fruit Muffin", price: 100, type: "veg", category: "Select Bakery" },
+  { name: "Chicken Patty", price: 80, type: "non-veg", category: "Select Bakery" },
+  { name: "Paneer Patty", price: 70, type: "veg", category: "Select Bakery" },
+  { name: "Aloo Patty", price: 60, type: "veg", category: "Select Bakery" },
+  { name: "Mutton Patty", price: 80, type: "non-veg", category: "Select Bakery" },
+  { name: "Chicken Makhni Sandwich", price: 160, type: "non-veg", category: "Select Bakery" },
+  { name: "Tres Leches Cake", price: 160, type: "veg", category: "Select Bakery" },
+  { name: "Tres Leches Cake (TA)", price: 180, type: "veg", category: "Select Bakery" },
+
+  // Snacks
+  { name: "Chicken Sandwich", price: 150, type: "non-veg", category: "Snacks" },
+  { name: "Cheese Corn Sandwich", price: 100, type: "veg", category: "Snacks" },
+  { name: "Chicken Loaf", price: 120, type: "non-veg", category: "Snacks" },
+  { name: "Chicken Muffin", price: 80, type: "non-veg", category: "Snacks" },
+  { name: "Chocolate Truffle Pastry", price: 140, type: "veg", category: "Snacks", bestseller: true },
+  { name: "Brownie KitKat Shake", price: 170, type: "veg", category: "Snacks" },
+  { name: "Brownie KitKat Shake + Coffee", price: 209, type: "veg", category: "Snacks" },
+
+  // Happiness @ MRP
+  { name: "Nescafé RTD", price: 50, type: "veg", category: "Happiness @ MRP" },
+  { name: "Maggi Chilli Chow Cuppa", price: 50, type: "veg", category: "Happiness @ MRP" },
+  { name: "Maggi Masala Cuppa", price: 50, type: "veg", category: "Happiness @ MRP" },
+  { name: "Classic Fruit & Nut", price: 50, type: "veg", category: "Happiness @ MRP" },
+  { name: "KitKat Dark Choco Wafer", price: 220, type: "veg", category: "Happiness @ MRP" },
+  { name: "Bar One", price: 10, type: "veg", category: "Happiness @ MRP" },
+  { name: "Milkybar", price: 20, type: "veg", category: "Happiness @ MRP" },
+  { name: "Munch", price: 20, type: "veg", category: "Happiness @ MRP" },
+  { name: "KitKat", price: 25, type: "veg", category: "Happiness @ MRP" },
+  { name: "Nestlé Classic", price: 20, type: "veg", category: "Happiness @ MRP" },
+  { name: "KitKat (New)", price: 30, type: "veg", category: "Happiness @ MRP" },
+  { name: "Packaged Water", price: 10, type: "veg", category: "Happiness @ MRP" },
+];
+
+// ============================================================
+// CATEGORY CONFIG
+// ============================================================
+const categoryConfig = {
+  "Freshly Brewed Coffee": { emoji: "☕", image: "images/cat_coffee.png", order: 1 },
+  "Classic Teas":          { emoji: "🍵", image: "images/cat_tea.png",    order: 2 },
+  "Blended Cold Beverages":{ emoji: "🧊", image: "images/cat_cold.png",  order: 3 },
+  "Shakes & Mocktails":    { emoji: "🥤", image: "images/cat_shakes.png", order: 4 },
+  "Maggi & Pasta":         { emoji: "🍜", image: "images/cat_maggi.png", order: 5 },
+  "Select Bakery":         { emoji: "🧁", image: "images/cat_bakery.png", order: 6 },
+  "Snacks":                { emoji: "🥪", image: "images/cat_snacks.png", order: 7 },
+  "Happiness @ MRP":       { emoji: "🍫", image: "images/cat_snacks.png", order: 8 },
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let activeCategory = 'all';
+let activeFilter = null;
+let searchQuery = '';
+
+// ============================================================
+// DOM
+// ============================================================
+const $ = id => document.getElementById(id);
+const categoryScroll = $('category-scroll');
+const menuContainer = $('menu-container');
+const searchInput = $('search-input');
+const searchClear = $('search-clear');
+const noResults = $('no-results');
+const scrollTopBtn = $('scroll-top');
+const header = $('main-header');
+const filterTags = document.querySelectorAll('.filter-tag');
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  buildCategoryNav();
+  renderMenu();
+  updateStats();
+  setupEvents();
+
+  // Hide loader
+  setTimeout(() => $('loading-screen').classList.add('hidden'), 600);
+});
+
+// ============================================================
+// CATEGORY NAV
+// ============================================================
+function buildCategoryNav() {
+  const cats = getOrderedCategories();
+  let h = `<button class="category-pill active" data-category="all">
+    <span class="pill-emoji">✨</span>All<span class="pill-count">${menuData.length}</span>
+  </button>`;
+
+  cats.forEach(cat => {
+    const count = menuData.filter(i => i.category === cat).length;
+    const c = categoryConfig[cat] || { emoji: '📋' };
+    h += `<button class="category-pill" data-category="${cat}">
+      <span class="pill-emoji">${c.emoji}</span>${cat}<span class="pill-count">${count}</span>
+    </button>`;
+  });
+
+  categoryScroll.innerHTML = h;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderMenu() {
+  const filtered = getFilteredItems();
+  const cats = getOrderedCategories();
+
+  if (filtered.length === 0) {
+    menuContainer.innerHTML = '';
+    noResults.classList.add('visible');
+    return;
+  }
+
+  noResults.classList.remove('visible');
+  let h = '';
+
+  cats.forEach(cat => {
+    const items = filtered.filter(i => i.category === cat);
+    if (!items.length) return;
+
+    const c = categoryConfig[cat] || { emoji: '📋', image: '' };
+    const id = cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+    h += `
+      <section class="category-section" id="section-${id}">
+        <div class="category-header">
+          <img class="category-header-img" src="${c.image}" alt="${cat}" loading="lazy" decoding="async">
+          <div class="category-header-overlay">
+            <span class="category-emoji">${c.emoji}</span>
+            <h2 class="category-name">${cat}</h2>
+            <span class="category-count">${items.length} item${items.length !== 1 ? 's' : ''}</span>
+          </div>
+        </div>
+        <div class="menu-items">
+          ${items.map(renderItem).join('')}
+        </div>
+      </section>`;
+  });
+
+  menuContainer.innerHTML = h;
+}
+
+function renderItem(item) {
+  const badge = item.type === 'non-veg' ? 'non-veg' : item.type;
+  const price = item.price > 0
+    ? `<span class="rupee">₹</span>${item.price}`
+    : 'Ask';
+  const pClass = item.price > 0 ? 'item-price' : 'item-price ask-price';
+
+  const addons = item.addons && item.addons.length
+    ? `<div class="item-addons">${item.addons.map(a => `<span class="addon-tag">+ ${a}</span>`).join('')}</div>`
+    : '';
+
+  const popular = item.bestseller ? `<span class="bestseller-tag">★ Popular</span>` : '';
+
+  return `
+    <div class="menu-item" id="item-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">
+      ${popular}
+      <div class="item-info">
+        <div class="item-top-row">
+          <span class="veg-badge ${badge}"></span>
+          <span class="item-name">${item.name}</span>
+        </div>
+        ${addons}
+      </div>
+      <div class="${pClass}">${price}</div>
+    </div>`;
+}
+
+// ============================================================
+// FILTER HELPERS
+// ============================================================
+function getFilteredItems() {
+  let items = menuData;
+
+  if (activeCategory !== 'all')
+    items = items.filter(i => i.category === activeCategory);
+
+  if (activeFilter)
+    items = items.filter(i => i.type === activeFilter);
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    items = items.filter(i =>
+      i.name.toLowerCase().includes(q) ||
+      i.category.toLowerCase().includes(q)
+    );
+  }
+
+  return items;
+}
+
+function getOrderedCategories() {
+  return [...new Set(menuData.map(i => i.category))]
+    .sort((a, b) => ((categoryConfig[a] || {}).order || 99) - ((categoryConfig[b] || {}).order || 99));
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  const f = getFilteredItems();
+  const cats = [...new Set(f.map(i => i.category))];
+  animateNum('stat-total', f.length);
+  animateNum('stat-categories', cats.length);
+  animateNum('stat-veg', f.filter(i => i.type === 'veg').length);
+}
+
+function animateNum(id, target) {
+  const el = $(id);
+  const from = parseInt(el.textContent) || 0;
+  const diff = target - from;
+  if (diff === 0) return;
+  const steps = 15;
+  let step = 0;
+  const iv = setInterval(() => {
+    step++;
+    el.textContent = Math.round(from + (diff / steps) * step);
+    if (step >= steps) { el.textContent = target; clearInterval(iv); }
+  }, 18);
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+function setupEvents() {
+  // Category pills
+  categoryScroll.addEventListener('click', e => {
+    const pill = e.target.closest('.category-pill');
+    if (!pill) return;
+
+    document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    activeCategory = pill.dataset.category;
+    renderMenu();
+    updateStats();
+
+    // Scroll pill into view (center it)
+    pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+    // Scroll to the category section
+    if (activeCategory !== 'all') {
+      const secId = activeCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const sec = document.getElementById(`section-${secId}`);
+      if (sec) setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    }
+  });
+
+  // Search — debounced for perf
+  let searchTimer;
+  searchInput.addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      searchClear.classList.toggle('visible', searchQuery.length > 0);
+      renderMenu();
+      updateStats();
+    }, 150);
+  });
+
+  // Dismiss keyboard on "Search" / Enter
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchInput.blur();
+    }
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchQuery = '';
+    searchClear.classList.remove('visible');
+    renderMenu();
+    updateStats();
+  });
+
+  // Dietary filters
+  filterTags.forEach(tag => {
+    tag.addEventListener('click', () => {
+      const f = tag.dataset.filter;
+      if (activeFilter === f) {
+        activeFilter = null;
+        tag.classList.remove('active');
+      } else {
+        filterTags.forEach(t => t.classList.remove('active'));
+        tag.classList.add('active');
+        activeFilter = f;
+      }
+      renderMenu();
+      updateStats();
+    });
+  });
+
+  // Scroll: header state + back-to-top
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        header.classList.toggle('scrolled', y > 40);
+        scrollTopBtn.classList.toggle('visible', y > 500);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Scroll to top
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Prevent pull-to-refresh interfering on mobile
+  document.body.addEventListener('touchmove', () => {}, { passive: true });
+}
+</script>
+
+</body>
+</html>
