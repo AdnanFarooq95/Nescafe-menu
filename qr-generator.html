@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nescafé — QR Code Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     :root {
       --bg: #0d0907;
-      --bg2: #1a110d;
       --card: rgba(42, 26, 18, 0.65);
       --border: rgba(212, 165, 116, 0.12);
       --text: #faf3eb;
@@ -22,64 +23,54 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      padding: 40px 16px 60px;
+      -webkit-font-smoothing: antialiased;
     }
 
     body::before {
       content: '';
       position: fixed;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
+      inset: 0;
       background:
         radial-gradient(ellipse at 30% 40%, rgba(200,16,46,0.04) 0%, transparent 50%),
         radial-gradient(ellipse at 70% 60%, rgba(212,165,116,0.06) 0%, transparent 50%);
       z-index: -1;
+      pointer-events: none;
     }
 
-    .container {
-      max-width: 600px;
-      width: 100%;
-    }
+    .container { max-width: 440px; width: 100%; }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .logo h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2rem;
-      font-weight: 700;
-    }
-
+    .logo { text-align: center; margin-bottom: 8px; }
+    .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
     .logo h1 span { color: var(--red); }
 
     .subtitle {
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: var(--text3);
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
 
     .input-section {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 28px;
+      padding: 24px 20px;
       margin-bottom: 24px;
     }
 
     .input-section label {
       display: block;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -87,22 +78,20 @@
       margin-bottom: 10px;
     }
 
-    .input-row {
-      display: flex;
-      gap: 12px;
-    }
+    .input-row { display: flex; gap: 10px; }
 
     .input-row input {
       flex: 1;
-      padding: 14px 18px;
+      padding: 13px 16px;
       background: rgba(13,9,7,0.6);
       border: 1px solid var(--border);
       border-radius: 12px;
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       outline: none;
       transition: border-color 0.2s;
+      min-width: 0;
     }
 
     .input-row input:focus {
@@ -113,27 +102,25 @@
     .input-row input::placeholder { color: var(--text3); }
 
     .generate-btn {
-      padding: 14px 28px;
+      padding: 13px 22px;
       background: linear-gradient(135deg, var(--red), var(--red-dark));
       border: none;
       border-radius: 12px;
       color: white;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s;
-      box-shadow: 0 4px 20px rgba(200,16,46,0.3);
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(200,16,46,0.3);
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .generate-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(200,16,46,0.45);
-    }
+    .generate-btn:active { transform: scale(0.95); }
 
     .help-text {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text3);
       margin-top: 12px;
       line-height: 1.6;
@@ -145,44 +132,42 @@
     .qr-output {
       display: none;
       text-align: center;
-      animation: fadeIn 0.5s ease;
+      animation: fadeIn 0.4s ease;
     }
 
     .qr-output.visible { display: block; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .qr-card {
       background: white;
-      border-radius: 24px;
-      padding: 40px;
+      border-radius: 20px;
+      padding: 32px 28px;
       display: inline-flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .qr-card .qr-logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: #1a0e0a;
     }
 
     .qr-card .qr-logo span { color: var(--red); }
 
-    #qr-canvas {
-      border-radius: 12px;
-    }
+    #qr-image { border-radius: 8px; }
 
     .qr-card .scan-text {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: #1a0e0a;
       text-transform: uppercase;
@@ -190,44 +175,47 @@
     }
 
     .qr-card .scan-subtext {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #8a7060;
       margin-top: -8px;
     }
 
     .qr-url {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       color: var(--text3);
       word-break: break-all;
       margin-bottom: 16px;
+      padding: 0 8px;
     }
 
     .action-btns {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       justify-content: center;
       flex-wrap: wrap;
     }
 
     .action-btn {
-      padding: 12px 24px;
+      padding: 12px 20px;
       border-radius: 12px;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s;
+      transition: all 0.2s;
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
+
+    .action-btn:active { transform: scale(0.95); }
 
     .action-btn.primary {
       background: linear-gradient(135deg, var(--red), var(--red-dark));
       color: white;
       border: none;
-      box-shadow: 0 2px 15px rgba(200,16,46,0.3);
+      box-shadow: 0 2px 12px rgba(200,16,46,0.3);
     }
 
     .action-btn.secondary {
@@ -235,12 +223,10 @@
       color: var(--text);
     }
 
-    .action-btn:hover { transform: translateY(-2px); }
-
-    /* Print Styles */
+    /* Print Section */
     .print-section {
       display: none;
-      margin-top: 32px;
+      margin-top: 28px;
       animation: fadeIn 0.4s ease;
     }
 
@@ -249,34 +235,33 @@
     .print-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin-top: 16px;
+      gap: 16px;
+      margin-top: 12px;
     }
 
     .print-card-mini {
       background: white;
-      border-radius: 16px;
-      padding: 24px 16px;
+      border-radius: 14px;
+      padding: 20px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .print-card-mini .mini-logo {
       font-family: 'Playfair Display', serif;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #1a0e0a;
     }
 
     .print-card-mini .mini-logo span { color: var(--red); }
-
-    .print-card-mini canvas { border-radius: 8px; }
+    .print-card-mini img { border-radius: 6px; }
 
     .print-card-mini .mini-text {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 600;
       color: #1a0e0a;
       text-transform: uppercase;
@@ -285,59 +270,47 @@
 
     .print-label {
       font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text2);
-      margin-top: 16px;
       text-align: center;
     }
 
-    @media print {
-      body {
-        background: white !important;
-        padding: 0 !important;
-      }
-      body::before { display: none !important; }
-      .input-section,
-      .subtitle,
-      .logo,
-      .action-btns,
-      .qr-url,
-      .help-text,
-      .print-label { display: none !important; }
+    .error-msg {
+      color: var(--red);
+      font-size: 0.78rem;
+      margin-top: 10px;
+      display: none;
+    }
 
+    .error-msg.visible { display: block; }
+
+    @media print {
+      body { background: white !important; padding: 0 !important; }
+      body::before { display: none !important; }
+      .input-section, .subtitle, .logo, .action-btns, .qr-url, .help-text, .print-label, .error-msg { display: none !important; }
       .qr-output { display: block !important; }
       .qr-card { box-shadow: none !important; border: 2px solid #eee; }
-
-      .print-section {
-        display: block !important;
-        page-break-before: always;
-      }
-      .print-card-mini {
-        border: 1px solid #ddd;
-        box-shadow: none !important;
-      }
+      .print-section { display: block !important; page-break-before: always; }
+      .print-card-mini { border: 1px solid #ddd; }
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div class="logo">
-      <h1>NES<span>CAFÉ</span></h1>
-    </div>
-    <p class="subtitle">QR Code Generator — Create printable QR codes for your café tables</p>
+    <div class="logo"><h1>NES<span>CAFÉ</span></h1></div>
+    <p class="subtitle">Generate printable QR codes for your café tables</p>
 
     <div class="input-section">
-      <label>Menu URL</label>
+      <label>Your Menu URL</label>
       <div class="input-row">
-        <input type="url" id="url-input" placeholder="https://your-cafe-menu.com" value="">
-        <button class="generate-btn" id="generate-btn" onclick="generateQR()">Generate</button>
+        <input type="url" id="url-input" placeholder="https://adnanfarooq95.github.io/Nescafe-menu/" value="https://adnanfarooq95.github.io/Nescafe-menu/">
+        <button class="generate-btn" id="generate-btn">Generate</button>
       </div>
+      <p class="error-msg" id="error-msg">Please enter a valid URL starting with https://</p>
       <p class="help-text">
-        Enter the URL where your menu is hosted. You can host the menu folder on
-        <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>,
-        <a href="https://www.netlify.com/" target="_blank">Netlify</a>, or
-        <a href="https://vercel.com/" target="_blank">Vercel</a> for free.
+        Enter the URL where your menu is hosted.<br>
+        Your GitHub Pages URL: <a href="https://adnanfarooq95.github.io/Nescafe-menu/" target="_blank">adnanfarooq95.github.io/Nescafe-menu</a>
       </p>
     </div>
 
@@ -345,193 +318,127 @@
     <div class="qr-output" id="qr-output">
       <div class="qr-card" id="qr-card">
         <div class="qr-logo">NES<span>CAFÉ</span></div>
-        <canvas id="qr-canvas"></canvas>
+        <img id="qr-image" alt="QR Code" width="220" height="220">
         <div class="scan-text">Scan for Menu</div>
         <div class="scan-subtext">Point your phone camera here</div>
       </div>
-
       <p class="qr-url" id="qr-url-display"></p>
-
       <div class="action-btns">
-        <button class="action-btn primary" onclick="downloadQR()">
-          📥 Download QR
-        </button>
-        <button class="action-btn secondary" onclick="showPrintView()">
-          🖨️ Print Cards
-        </button>
-        <button class="action-btn secondary" onclick="downloadFullCard()">
-          🎴 Download Card
-        </button>
+        <button class="action-btn primary" id="btn-download">📥 Download QR</button>
+        <button class="action-btn secondary" id="btn-print">🖨️ Print Cards</button>
       </div>
     </div>
 
     <!-- Print Grid -->
     <div class="print-section" id="print-section">
       <p class="print-label">Table cards — print and cut along edges</p>
-      <div class="print-grid" id="print-grid">
-        <!-- JS fills 4 mini cards -->
-      </div>
-      <div class="action-btns" style="margin-top: 20px;">
-        <button class="action-btn primary" onclick="window.print()">🖨️ Print Now</button>
+      <div class="print-grid" id="print-grid"></div>
+      <div class="action-btns" style="margin-top: 16px;">
+        <button class="action-btn primary" id="btn-print-now">🖨️ Print Now</button>
       </div>
     </div>
   </div>
 
-  <!-- QR Code library -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
-  <script>
-    function generateQR() {
-      const url = document.getElementById('url-input').value.trim();
-      if (!url) {
-        alert('Please enter a valid URL');
-        return;
-      }
+<script>
+// ============================================================
+// Lightweight QR Code generator — uses Google Charts API
+// (no external JS library needed, works everywhere)
+// ============================================================
 
-      const canvas = document.getElementById('qr-canvas');
+const urlInput = document.getElementById('url-input');
+const generateBtn = document.getElementById('generate-btn');
+const qrImage = document.getElementById('qr-image');
+const qrOutput = document.getElementById('qr-output');
+const qrUrlDisplay = document.getElementById('qr-url-display');
+const errorMsg = document.getElementById('error-msg');
+const printSection = document.getElementById('print-section');
+const printGrid = document.getElementById('print-grid');
 
-      QRCode.toCanvas(canvas, url, {
-        width: 220,
-        margin: 2,
-        color: { dark: '#1a0e0a', light: '#ffffff' },
-        errorCorrectionLevel: 'H'
-      }, function(error) {
-        if (error) {
-          console.error(error);
-          alert('Error generating QR code. Please check the URL.');
-          return;
-        }
+let currentQrUrl = '';
 
-        document.getElementById('qr-output').classList.add('visible');
-        document.getElementById('qr-url-display').textContent = url;
+// Generate QR
+generateBtn.addEventListener('click', generateQR);
+urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') generateQR(); });
 
-        // Generate mini cards for print
-        generatePrintCards(url);
-      });
-    }
+function generateQR() {
+  const url = urlInput.value.trim();
 
-    function generatePrintCards(url) {
-      const grid = document.getElementById('print-grid');
-      grid.innerHTML = '';
+  // Validate
+  if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+    errorMsg.classList.add('visible');
+    return;
+  }
+  errorMsg.classList.remove('visible');
 
-      for (let i = 0; i < 6; i++) {
-        const card = document.createElement('div');
-        card.className = 'print-card-mini';
+  currentQrUrl = url;
 
-        const logo = document.createElement('div');
-        logo.className = 'mini-logo';
-        logo.innerHTML = 'NES<span>CAFÉ</span>';
+  // Use Google Charts QR API — reliable, no JS library needed
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(url)}&margin=8&color=1a0e0a&bgcolor=ffffff&format=png`;
 
-        const miniCanvas = document.createElement('canvas');
+  qrImage.src = qrApiUrl;
+  qrImage.onload = () => {
+    qrOutput.classList.add('visible');
+    qrUrlDisplay.textContent = url;
+    generatePrintCards(url);
+  };
+  qrImage.onerror = () => {
+    // Fallback: use a different QR API
+    const fallbackUrl = `https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=${encodeURIComponent(url)}&choe=UTF-8`;
+    qrImage.src = fallbackUrl;
+    qrOutput.classList.add('visible');
+    qrUrlDisplay.textContent = url;
+    generatePrintCards(url);
+  };
+}
 
-        const text = document.createElement('div');
-        text.className = 'mini-text';
-        text.textContent = 'Scan for Menu';
+// Print cards grid
+function generatePrintCards(url) {
+  const qrSmallUrl = `https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(url)}&margin=4&color=1a0e0a&bgcolor=ffffff&format=png`;
 
-        card.appendChild(logo);
-        card.appendChild(miniCanvas);
-        card.appendChild(text);
-        grid.appendChild(card);
+  printGrid.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const card = document.createElement('div');
+    card.className = 'print-card-mini';
+    card.innerHTML = `
+      <div class="mini-logo">NES<span>CAFÉ</span></div>
+      <img src="${qrSmallUrl}" alt="QR Code" width="130" height="130">
+      <div class="mini-text">Scan for Menu</div>
+    `;
+    printGrid.appendChild(card);
+  }
+}
 
-        QRCode.toCanvas(miniCanvas, url, {
-          width: 130,
-          margin: 1,
-          color: { dark: '#1a0e0a', light: '#ffffff' },
-          errorCorrectionLevel: 'H'
-        });
-      }
-    }
+// Download QR
+document.getElementById('btn-download').addEventListener('click', () => {
+  if (!currentQrUrl) return;
+  // High-res version for download
+  const downloadUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(currentQrUrl)}&margin=12&color=1a0e0a&bgcolor=ffffff&format=png`;
 
-    function downloadQR() {
-      const canvas = document.getElementById('qr-canvas');
-      const link = document.createElement('a');
-      link.download = 'nescafe-menu-qr.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    }
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.download = 'nescafe-menu-qr.png';
+  link.target = '_blank';
+  link.click();
+});
 
-    function downloadFullCard() {
-      const card = document.getElementById('qr-card');
-      // Use html2canvas approach — simple canvas export
-      const canvas = document.getElementById('qr-canvas');
-      
-      // Create a new larger canvas with the full card design
-      const exportCanvas = document.createElement('canvas');
-      const ctx = exportCanvas.getContext('2d');
-      const w = 400;
-      const h = 520;
-      exportCanvas.width = w;
-      exportCanvas.height = h;
+// Toggle print section
+document.getElementById('btn-print').addEventListener('click', () => {
+  printSection.classList.toggle('visible');
+  if (printSection.classList.contains('visible')) {
+    printSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+});
 
-      // White background with rounded corners
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.roundRect(0, 0, w, h, 24);
-      ctx.fill();
+// Print
+document.getElementById('btn-print-now').addEventListener('click', () => window.print());
 
-      // Logo text
-      ctx.fillStyle = '#1a0e0a';
-      ctx.font = 'bold 28px "Playfair Display", Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('NES', w/2 - 30, 60);
-      ctx.fillStyle = '#c8102e';
-      ctx.fillText('CAFÉ', w/2 + 32, 60);
+// Auto-generate on load (URL is pre-filled)
+window.addEventListener('load', () => {
+  if (urlInput.value.trim()) {
+    setTimeout(generateQR, 300);
+  }
+});
+</script>
 
-      // QR code
-      const qrSize = 220;
-      const qrX = (w - qrSize) / 2;
-      ctx.drawImage(canvas, qrX, 90, qrSize, qrSize);
-
-      // Scan text
-      ctx.fillStyle = '#1a0e0a';
-      ctx.font = '600 16px "Outfit", sans-serif';
-      ctx.letterSpacing = '3px';
-      ctx.textAlign = 'center';
-      ctx.fillText('SCAN FOR MENU', w/2, 350);
-
-      // Subtitle
-      ctx.fillStyle = '#8a7060';
-      ctx.font = '400 12px "Inter", sans-serif';
-      ctx.fillText('Point your phone camera here', w/2, 375);
-
-      // Decorative line
-      ctx.strokeStyle = '#d4a574';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(w/2 - 30, 400);
-      ctx.lineTo(w/2 + 30, 400);
-      ctx.stroke();
-
-      // Coffee emoji
-      ctx.font = '32px serif';
-      ctx.fillText('☕', w/2, 445);
-
-      // Footer
-      ctx.fillStyle = '#c4a882';
-      ctx.font = '400 10px "Inter", sans-serif';
-      ctx.fillText('Freshly brewed, just for you', w/2, 485);
-
-      const link = document.createElement('a');
-      link.download = 'nescafe-table-card.png';
-      link.href = exportCanvas.toDataURL('image/png');
-      link.click();
-    }
-
-    function showPrintView() {
-      const section = document.getElementById('print-section');
-      section.classList.toggle('visible');
-      if (section.classList.contains('visible')) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-
-    // Auto-generate if URL has hash
-    window.addEventListener('load', () => {
-      const hash = window.location.hash.slice(1);
-      if (hash) {
-        document.getElementById('url-input').value = decodeURIComponent(hash);
-        generateQR();
-      }
-    });
-  </script>
 </body>
 </html>
