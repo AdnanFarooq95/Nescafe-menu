@@ -113,8 +113,11 @@
     .admin-item-info span { color: var(--text2); font-size: 0.8rem; }
     .admin-item-img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; margin-right: 15px; background: #000; }
     .admin-item-left { display: flex; align-items: center; }
+    .admin-item-actions { display: flex; gap: 10px; }
 
-    .delete-btn { background: transparent; border: none; color: var(--red); cursor: pointer; padding: 5px; }
+    .action-btn { background: transparent; border: none; cursor: pointer; padding: 5px; font-weight: 500; font-size: 0.85rem; }
+    .delete-btn { color: var(--red); }
+    .edit-btn { color: var(--accent); }
 
     /* Modal */
     .modal-overlay {
@@ -172,10 +175,10 @@
     </div>
   </div>
 
-  <!-- Add Item Modal -->
+  <!-- Add/Edit Item Modal -->
   <div class="modal-overlay" id="item-modal">
     <div class="modal">
-      <h2 style="margin-bottom: 20px;">Add Menu Item</h2>
+      <h2 id="modal-title" style="margin-bottom: 20px;">Add Menu Item</h2>
       <div class="form-group">
         <label>Item Name</label>
         <input type="text" id="item-name" placeholder="e.g. Vanilla Latte">
@@ -241,6 +244,7 @@ let fileBase64 = null;
 let fileExtension = '';
 let catFileBase64 = null;
 let catFileExtension = '';
+let editingIndex = -1;
 
 // DOM Elements
 const loginScreen = document.getElementById('login-screen');
@@ -365,7 +369,10 @@ function renderAdminList() {
             <span>₹${item.price} • ${item.category}</span>
           </div>
         </div>
-        <button class="delete-btn" onclick="deleteItem(${realIndex})">✕ Remove</button>
+        <div class="admin-item-actions">
+          <button class="action-btn edit-btn" onclick="editItem(${realIndex})">✎ Edit</button>
+          <button class="action-btn delete-btn" onclick="deleteItem(${realIndex})">✕ Remove</button>
+        </div>
       </div>
     `;
   });
@@ -384,8 +391,29 @@ window.deleteItem = (index) => {
   }
 };
 
+window.editItem = (index) => {
+  editingIndex = index;
+  const item = menuData[index];
+  document.getElementById('item-name').value = item.name;
+  document.getElementById('item-price').value = item.price || '';
+  document.getElementById('item-type').value = item.type;
+  document.getElementById('item-category').value = item.category;
+  document.getElementById('item-bestseller').checked = !!item.bestseller;
+  
+  document.getElementById('item-image').value = '';
+  document.getElementById('new-category-fields').style.display = 'none';
+  
+  document.getElementById('modal-title').textContent = 'Edit Menu Item';
+  document.getElementById('btn-save-item').textContent = 'Save Changes';
+  
+  fileBase64 = null;
+  catFileBase64 = null;
+  modal.classList.add('active');
+};
+
 // Modal Logic
 document.getElementById('btn-add-item').addEventListener('click', () => {
+  editingIndex = -1;
   document.getElementById('item-name').value = '';
   document.getElementById('item-price').value = '';
   document.getElementById('item-image').value = '';
@@ -394,6 +422,11 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
   document.getElementById('new-cat-name').value = '';
   document.getElementById('new-cat-emoji').value = '';
   document.getElementById('new-cat-image').value = '';
+  document.getElementById('item-bestseller').checked = false;
+  
+  document.getElementById('modal-title').textContent = 'Add Menu Item';
+  document.getElementById('btn-save-item').textContent = 'Add Item';
+  
   fileBase64 = null;
   catFileBase64 = null;
   modal.classList.add('active');
@@ -479,6 +512,12 @@ document.getElementById('btn-save-item').addEventListener('click', async () => {
 
   const newItem = { name, price, type, category: finalCategory };
   if (bestseller) newItem.bestseller = true;
+  
+  // Retain existing addons and image if editing
+  if (editingIndex > -1) {
+    if (menuData[editingIndex].addons) newItem.addons = menuData[editingIndex].addons;
+    if (menuData[editingIndex].image) newItem.image = menuData[editingIndex].image;
+  }
 
   // Upload image immediately if exists, to get URL
   if (fileBase64) {
@@ -498,10 +537,16 @@ document.getElementById('btn-save-item').addEventListener('click', async () => {
     }
   }
 
-  menuData.push(newItem);
+  if (editingIndex > -1) {
+    menuData[editingIndex] = newItem;
+  } else {
+    menuData.push(newItem);
+  }
+  
+  editingIndex = -1;
   renderAdminList();
   modal.classList.remove('active');
-  btn.textContent = 'Add Item';
+  btn.textContent = 'Save Changes';
   btn.disabled = false;
 });
 
