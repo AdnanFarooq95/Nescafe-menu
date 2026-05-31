@@ -197,6 +197,20 @@
       <div class="form-group">
         <label>Category</label>
         <select id="item-category"></select>
+        <div id="new-category-fields" style="display:none; margin-top:10px; padding:15px; background:rgba(0,0,0,0.2); border-radius:8px; border:1px dashed var(--border);">
+          <label>New Category Name</label>
+          <input type="text" id="new-cat-name" placeholder="e.g. Special Desserts" style="margin-bottom:10px;">
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1;">
+              <label>Emoji (e.g. 🍰)</label>
+              <input type="text" id="new-cat-emoji" placeholder="🍰">
+            </div>
+            <div style="flex:1;">
+              <label>Category Image</label>
+              <input type="file" id="new-cat-image" accept="image/jpeg, image/png, image/webp">
+            </div>
+          </div>
+        </div>
       </div>
       <div class="form-group">
         <label>Image (Optional)</label>
@@ -225,6 +239,8 @@ let menuData = [];
 let categoryConfig = {};
 let fileBase64 = null;
 let fileExtension = '';
+let catFileBase64 = null;
+let catFileExtension = '';
 
 // DOM Elements
 const loginScreen = document.getElementById('login-screen');
@@ -324,7 +340,9 @@ function renderAdminList() {
 }
 
 function populateCategories() {
-  categorySelect.innerHTML = Object.keys(categoryConfig).map(c => `<option value="${c}">${c}</option>`).join('');
+  const options = Object.keys(categoryConfig).map(c => `<option value="${c}">${c}</option>`);
+  options.push(`<option value="__new__" style="color:var(--accent);font-weight:bold;">+ Create New Category</option>`);
+  categorySelect.innerHTML = options.join('');
 }
 
 window.deleteItem = (index) => {
@@ -339,8 +357,18 @@ document.getElementById('btn-add-item').addEventListener('click', () => {
   document.getElementById('item-name').value = '';
   document.getElementById('item-price').value = '';
   document.getElementById('item-image').value = '';
+  document.getElementById('item-category').value = Object.keys(categoryConfig)[0] || '';
+  document.getElementById('new-category-fields').style.display = 'none';
+  document.getElementById('new-cat-name').value = '';
+  document.getElementById('new-cat-emoji').value = '';
+  document.getElementById('new-cat-image').value = '';
   fileBase64 = null;
+  catFileBase64 = null;
   modal.classList.add('active');
+});
+
+categorySelect.addEventListener('change', (e) => {
+  document.getElementById('new-category-fields').style.display = e.target.value === '__new__' ? 'block' : 'none';
 });
 
 document.getElementById('btn-cancel-item').addEventListener('click', () => {
@@ -351,15 +379,18 @@ document.getElementById('btn-cancel-item').addEventListener('click', () => {
 document.getElementById('item-image').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  
-  const ext = file.name.split('.').pop();
-  fileExtension = ext;
-
+  fileExtension = file.name.split('.').pop();
   const reader = new FileReader();
-  reader.onload = (ev) => {
-    // Strip "data:image/jpeg;base64," part
-    fileBase64 = ev.target.result.split(',')[1];
-  };
+  reader.onload = (ev) => fileBase64 = ev.target.result.split(',')[1];
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('new-cat-image').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  catFileExtension = file.name.split('.').pop();
+  const reader = new FileReader();
+  reader.onload = (ev) => catFileBase64 = ev.target.result.split(',')[1];
   reader.readAsDataURL(file);
 });
 
@@ -377,7 +408,44 @@ document.getElementById('btn-save-item').addEventListener('click', async () => {
   btn.textContent = 'Processing...';
   btn.disabled = true;
 
-  const newItem = { name, price, type, category };
+  let finalCategory = category;
+
+  // Handle New Category creation inline
+  if (category === '__new__') {
+    const newCatName = document.getElementById('new-cat-name').value.trim();
+    const newCatEmoji = document.getElementById('new-cat-emoji').value.trim() || '📋';
+    if (!newCatName) {
+      btn.textContent = 'Add Item';
+      btn.disabled = false;
+      return alert('New Category Name is required');
+    }
+    
+    finalCategory = newCatName;
+    let catImgPath = '';
+    
+    if (catFileBase64) {
+      try {
+        const catFileName = `cat-${Date.now()}.${catFileExtension}`;
+        catImgPath = `images/${catFileName}`;
+        await ghRequest('PUT', `contents/${catImgPath}`, {
+          message: `Upload image for category ${newCatName}`,
+          content: catFileBase64,
+          branch: BRANCH
+        });
+      } catch (err) {
+        console.error("Failed to upload category image", err);
+      }
+    }
+    
+    categoryConfig[newCatName] = {
+      emoji: newCatEmoji,
+      image: catImgPath,
+      order: Object.keys(categoryConfig).length + 1
+    };
+    populateCategories();
+  }
+
+  const newItem = { name, price, type, category: finalCategory };
   if (bestseller) newItem.bestseller = true;
 
   // Upload image immediately if exists, to get URL
