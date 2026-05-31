@@ -279,6 +279,38 @@ function b64EncodeUnicode(str) {
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
 }
 
+// Image Resizer Helper
+function resizeImage(file, maxWidth, callback) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      let width = img.width;
+      let height = img.height;
+      
+      // Calculate aspect ratio
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Convert to JPEG format with 0.8 quality to save space
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      // Return only the base64 part
+      callback(dataUrl.split(',')[1]);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 // Login
 document.getElementById('btn-login').addEventListener('click', () => {
   const token = document.getElementById('gh-token').value.trim();
@@ -379,19 +411,19 @@ document.getElementById('btn-cancel-item').addEventListener('click', () => {
 document.getElementById('item-image').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  fileExtension = file.name.split('.').pop();
-  const reader = new FileReader();
-  reader.onload = (ev) => fileBase64 = ev.target.result.split(',')[1];
-  reader.readAsDataURL(file);
+  fileExtension = 'jpg'; // We always compress to jpg
+  resizeImage(file, 400, (base64) => {
+    fileBase64 = base64;
+  });
 });
 
 document.getElementById('new-cat-image').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  catFileExtension = file.name.split('.').pop();
-  const reader = new FileReader();
-  reader.onload = (ev) => catFileBase64 = ev.target.result.split(',')[1];
-  reader.readAsDataURL(file);
+  catFileExtension = 'jpg'; // We always compress to jpg
+  resizeImage(file, 400, (base64) => {
+    catFileBase64 = base64;
+  });
 });
 
 // Save Local Item
