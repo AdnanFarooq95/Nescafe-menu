@@ -161,11 +161,6 @@
 
     <!-- Dashboard -->
     <div id="dashboard">
-      <div class="status-bar">
-        <span>Branch: <strong>dev</strong></span>
-        <button class="btn" id="btn-save" style="background: var(--accent); color: black;">Publish Changes to GitHub</button>
-      </div>
-
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
         <h2>Menu Items</h2>
         <button class="btn" id="btn-add-item">+ Add New Item</button>
@@ -235,7 +230,7 @@
 <script>
 const GITHUB_OWNER = 'AdnanFarooq95';
 const GITHUB_REPO = 'Nescafe-menu';
-const BRANCH = 'dev';
+const BRANCH = 'main';
 
 let ghToken = localStorage.getItem('nescafe_gh_token') || '';
 let menuData = [];
@@ -253,7 +248,6 @@ const btnLogout = document.getElementById('btn-logout');
 const itemListEl = document.getElementById('item-list');
 const categorySelect = document.getElementById('item-category');
 const modal = document.getElementById('item-modal');
-const btnSaveGlobal = document.getElementById('btn-save');
 
 // Initialization
 if (ghToken) {
@@ -384,10 +378,11 @@ function populateCategories() {
   categorySelect.innerHTML = options.join('');
 }
 
-window.deleteItem = (index) => {
-  if (confirm(`Delete ${menuData[index].name}? (You still need to click Publish Changes to save)`)) {
+window.deleteItem = async (index) => {
+  if (confirm(`Delete ${menuData[index].name}?`)) {
     menuData.splice(index, 1);
     renderAdminList();
+    await publishChanges();
   }
 };
 
@@ -548,12 +543,16 @@ document.getElementById('btn-save-item').addEventListener('click', async () => {
   modal.classList.remove('active');
   btn.textContent = 'Save Changes';
   btn.disabled = false;
+  
+  // Auto-save
+  await publishChanges();
 });
 
-// Publish Changes to GitHub
-btnSaveGlobal.addEventListener('click', async () => {
-  btnSaveGlobal.textContent = 'Saving...';
-  btnSaveGlobal.disabled = true;
+// Auto-Publish Changes to GitHub
+async function publishChanges() {
+  const originalHtml = btnLogout.innerHTML;
+  btnLogout.innerHTML = 'Saving to live menu...';
+  btnLogout.disabled = true;
 
   try {
     // 1. Get current SHA of menu-data.json
@@ -566,7 +565,7 @@ btnSaveGlobal.addEventListener('click', async () => {
     // 2. Prepare payload
     const updatedJson = JSON.stringify({ menuData, categoryConfig }, null, 2);
     const payload = {
-      message: 'Update menu data via Admin Panel',
+      message: 'Update menu data via Admin Panel (Auto-save)',
       content: b64EncodeUnicode(updatedJson),
       branch: BRANCH
     };
@@ -574,16 +573,14 @@ btnSaveGlobal.addEventListener('click', async () => {
 
     // 3. PUT request
     await ghRequest('PUT', `contents/menu-data.json`, payload);
-    
-    alert('Changes Published Successfully to dev branch!');
   } catch (err) {
     console.error(err);
-    alert('Error saving data.');
+    alert('Error saving data. Please check your connection or token.');
   }
 
-  btnSaveGlobal.textContent = 'Publish Changes to GitHub';
-  btnSaveGlobal.disabled = false;
-});
+  btnLogout.innerHTML = originalHtml;
+  btnLogout.disabled = false;
+}
 </script>
 
 </body>
