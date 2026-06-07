@@ -504,6 +504,13 @@
       "price": 10,
       "type": "veg",
       "category": "Happiness @ MRP"
+    },
+    {
+      "name": "Kunafa Shake",
+      "price": 170,
+      "type": "veg",
+      "category": "Shakes & Mocktails",
+      "image": "images/items/item-1780834059255.jpg"
     }
   ],
   "categoryConfig": {
