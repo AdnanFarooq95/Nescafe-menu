@@ -125,6 +125,25 @@
   <!-- Scroll To Top -->
   <button class="scroll-top" id="scroll-top" aria-label="Scroll to top">↑</button>
 
+  <!-- Item Detail Modal -->
+  <div class="item-modal-overlay" id="item-modal">
+    <div class="item-modal-content">
+      <button class="item-modal-close" id="item-modal-close" aria-label="Close modal">✕</button>
+      <div class="item-modal-img-container" id="modal-img-container">
+        <img src="" alt="" id="modal-img" class="item-modal-img">
+      </div>
+      <div class="item-modal-body">
+        <div class="item-modal-header">
+          <h2 class="item-modal-title" id="modal-title"></h2>
+          <span class="veg-badge" id="modal-badge"></span>
+        </div>
+        <p class="item-modal-category" id="modal-category"></p>
+        <div class="item-modal-price" id="modal-price"></div>
+        <div class="item-modal-addons" id="modal-addons"></div>
+      </div>
+    </div>
+  </div>
+
 <script>
 let menuData = [];
 let categoryConfig = {};
@@ -148,6 +167,9 @@ const noResults = $('no-results');
 const scrollTopBtn = $('scroll-top');
 const header = $('main-header');
 const filterTags = document.querySelectorAll('.filter-tag');
+
+const itemModal = $('item-modal');
+const modalCloseBtn = $('item-modal-close');
 
 // ============================================================
 // INIT
@@ -248,7 +270,7 @@ function renderItem(item) {
   const image = item.image ? `<img src="${item.image}" alt="${item.name}" class="item-thumb" loading="lazy">` : '';
 
   return `
-    <div class="menu-item ${item.image ? 'has-image' : ''}" id="item-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}">
+    <div class="menu-item ${item.image ? 'has-image' : ''}" id="item-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}" onclick="openItemModal('${escape(item.name)}')">
       ${popular}
       ${image}
       <div class="item-info">
@@ -403,6 +425,54 @@ function setupEvents() {
   // Scroll to top
   scrollTopBtn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Item Modal Logic
+  window.openItemModal = (escapedName) => {
+    const name = unescape(escapedName);
+    const item = menuData.find(i => i.name === name);
+    if (!item) return;
+    
+    $('modal-title').textContent = item.name;
+    $('modal-category').textContent = item.category;
+    
+    const badge = item.type === 'non-veg' ? 'non-veg' : item.type;
+    $('modal-badge').className = 'veg-badge ' + badge;
+    
+    if (item.price > 0) {
+      $('modal-price').innerHTML = `<span class="rupee">₹</span>${item.price}`;
+    } else {
+      $('modal-price').textContent = 'Ask for price';
+    }
+    
+    if (item.addons && item.addons.length) {
+      $('modal-addons').innerHTML = item.addons.map(a => `<span class="addon-tag">+ ${a}</span>`).join('');
+    } else {
+      $('modal-addons').innerHTML = '';
+    }
+    
+    if (item.image) {
+      $('modal-img').src = item.image;
+      $('modal-img').alt = item.name;
+      $('modal-img-container').style.display = 'block';
+    } else {
+      $('modal-img-container').style.display = 'none';
+    }
+    
+    itemModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  modalCloseBtn.addEventListener('click', () => {
+    itemModal.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  itemModal.addEventListener('click', (e) => {
+    if (e.target === itemModal) {
+      itemModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
   });
 
   // Prevent pull-to-refresh interfering on mobile

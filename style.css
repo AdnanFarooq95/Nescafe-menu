@@ -921,6 +921,128 @@ body { scrollbar-width: none; }
   transform: scale(0.9);
 }
 
+/* ===== ITEM DETAIL MODAL ===== */
+.item-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 9, 7, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.item-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.item-modal-content {
+  width: 100%;
+  max-width: 500px;
+  background: var(--bg-primary);
+  border-radius: 28px 28px 0 0;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+  padding-bottom: var(--safe-bottom);
+}
+
+.item-modal-overlay.active .item-modal-content {
+  transform: translateY(0);
+}
+
+.item-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  color: #1a0e0a;
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.item-modal-img-container {
+  width: 100%;
+  height: 260px;
+  background: var(--bg-secondary);
+  display: none;
+}
+
+.item-modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-modal-body {
+  padding: 24px 24px 32px;
+}
+
+.item-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.item-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.item-modal-category {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.item-modal-price {
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--nescafe-red);
+}
+.item-modal-price .rupee {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-right: 2px;
+}
+
+.item-modal-addons {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.item-modal-addons .addon-tag {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+}
+
 /* ===== VERY SMALL SCREENS (SE, mini) ===== */
 @media (max-width: 360px) {
   .hero-title { font-size: 1.55rem; }
